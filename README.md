@@ -83,7 +83,7 @@ Create a `.env` file in the project root directory and add the following:
 
 ```text
 SECRET_KEY=your_secret_key_here
-ADMIN_CODE=ADMIN2024
+ADMIN_CODE=ADMIN_ABC_25
 DATABASE_URL=sqlite:///bus_ticket.db
 ```
 7.Run the application
