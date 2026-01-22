@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .dashboard-header h1 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .action-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+
+    .action-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .action-card h3 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .bookings-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .bookings-section h2 {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .booking-card {
+        border: 2px solid #e2e8f0;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+    }
+
+    .booking-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .booking-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .booking-id {
+        font-weight: bold;
+        color: var(--primary);
+    }
+
+    .status-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-confirmed {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+
+    .status-cancelled {
+        background: #fed7d7;
+        color: #742a2a;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Welcome, {{ current_user.username }}! 👋</h1>
+    <p>Manage your bus bookings and search for new trips</p>
+</div>
+
+<div class="quick-actions">
+    <a href="{{ url_for('search_buses') }}" class="action-card">
+        <div class="action-icon">🔍</div>
+        <h3>Search Buses</h3>
+        <p>Find and book tickets</p>
+    </a>
+    
+    <a href="{{ url_for('my_bookings') }}" class="action-card">
+        <div class="action-icon">🎫</div>
+        <h3>My Bookings</h3>
+        <p>View all bookings</p>
+    </a>
+</div>
+
+<div class="bookings-section">
+    <h2>Recent Bookings</h2>
+    
+    {% if bookings %}
+        {% for booking in bookings %}
+        <div class="booking-card">
+            <div class="booking-header">
+                <span class="booking-id">Booking #{{ booking.id }}</span>
+                <span class="status-badge status-{{ booking.status }}">{{ booking.status.title() }}</span>
+            </div>
+            <p><strong>Route:</strong> {{ booking.bus.route.origin }} → {{ booking.bus.route.destination }}</p>
+            <p><strong>Bus:</strong> {{ booking.bus.bus_number }} ({{ booking.bus.bus_type }})</p>
+            <p><strong>Date:</strong> {{ booking.journey_date.strftime('%Y-%m-%d') }}</p>
+            <p><strong>Seats:</strong> {{ booking.seat_numbers }}</p>
+            <p><strong>Fare:</strong> ₹{{ booking.total_fare }}</p>
+        </div>
+        {% endfor %}
+        
+        <a href="{{ url_for('my_bookings') }}" class="btn btn-primary" style="margin-top: 1rem;">View All Bookings</a>
+    {% else %}
+        <p>No bookings yet. <a href="{{ url_for('search_buses') }}" style="color: var(--primary);">Start booking now!</a></p>
+    {% endif %}
+</div>
+{% endblock %}

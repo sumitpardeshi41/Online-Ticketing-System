@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .search-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .search-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .form-group input {
+        padding: 0.9rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .bus-results {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .bus-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+    }
+
+    .bus-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+
+    .bus-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .bus-number {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: var(--primary);
+    }
+
+    .bus-type {
+        background: var(--secondary);
+        color: white;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .bus-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-label {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-bottom: 0.3rem;
+    }
+
+    .detail-value {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .seats-info {
+        background: #f0f9ff;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .available-seats {
+        font-weight: bold;
+        color: var(--secondary);
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 style="color: white; text-align: center; margin-bottom: 2rem;">🔍 Search Buses</h1>
+
+<div class="search-container">
+    <form method="get" class="search-form">
+        <div class="form-group">
+            <label for="origin">From (Origin)</label>
+            <input type="text" id="origin" name="origin" value="{{ request.args.get('origin', '') }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="destination">To (Destination)</label>
+            <input type="text" id="destination" name="destination" value="{{ request.args.get('destination', '') }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="journey_date">Journey Date</label>
+            <input type="date" id="journey_date" name="journey_date" value="{{ request.args.get('journey_date', '') }}" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="padding: 0.9rem;">Search</button>
+    </form>
+</div>
+
+{% if buses %}
+    <div class="bus-results">
+        {% for bus in buses %}
+        <div class="bus-card">
+            <div class="bus-header">
+                <span class="bus-number">{{ bus.bus_number }}</span>
+                <span class="bus-type">{{ bus.bus_type }}</span>
+            </div>
+            
+            <div class="bus-details">
+                <div class="detail-item">
+                    <span class="detail-label">Route</span>
+                    <span class="detail-value">{{ bus.route.origin }} → {{ bus.route.destination }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">Departure</span>
+                    <span class="detail-value">{{ bus.departure_time }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">Arrival</span>
+                    <span class="detail-value">{{ bus.arrival_time }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">Duration</span>
+                    <span class="detail-value">{{ bus.route.duration }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">Fare</span>
+                    <span class="detail-value">₹{{ bus.route.fare }}</span>
+                </div>
+            </div>
+            
+            <div class="seats-info">
+                <span class="available-seats">{{ bus.available_seats }} seats available</span>
+                <a href="{{ url_for('select_seats', bus_id=bus.id, journey_date=bus.journey_date) }}" class="btn btn-primary">Select Seats</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% elif request.args.get('origin') %}
+    <div class="no-results">
+        <h2>No buses found</h2>
+        <p>Try searching with different cities or dates</p>
+    </div>
+{% endif %}
+{% endblock %}

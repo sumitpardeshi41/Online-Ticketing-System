@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .bookings-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .bookings-header h1 {
+        color: var(--primary);
+    }
+
+    .bookings-container {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .booking-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+    }
+
+    .booking-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+
+    .booking-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .booking-id {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--primary);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .status-confirmed {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+
+    .status-cancelled {
+        background: #fed7d7;
+        color: #742a2a;
+    }
+
+    .booking-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-label {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-bottom: 0.3rem;
+    }
+
+    .detail-value {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .booking-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .no-bookings {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 15px;
+    }
+
+    .no-bookings-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bookings-header">
+    <h1>🎫 My Bookings</h1>
+    <p>View and manage all your bus bookings</p>
+</div>
+
+{% if bookings %}
+    <div class="bookings-container">
+        {% for booking in bookings %}
+        <div class="booking-card">
+            <div class="booking-header">
+                <span class="booking-id">Booking #{{ booking.id }}</span>
+                <span class="status-badge status-{{ booking.status }}">{{ booking.status.title() }}</span>
+            </div>
+
+            <div class="booking-details">
+                <div class="detail-item">
+                    <span class="detail-label">Passenger Name</span>
+                    <span class="detail-value">{{ booking.passenger_name }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Bus Number</span>
+                    <span class="detail-value">{{ booking.bus.bus_number }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Bus Type</span>
+                    <span class="detail-value">{{ booking.bus.bus_type }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Route</span>
+                    <span class="detail-value">{{ booking.bus.route.origin }} → {{ booking.bus.route.destination }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Journey Date</span>
+                    <span class="detail-value">{{ booking.journey_date.strftime('%Y-%m-%d') }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Departure Time</span>
+                    <span class="detail-value">{{ booking.bus.departure_time }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Seat Numbers</span>
+                    <span class="detail-value">{{ booking.seat_numbers }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Total Fare</span>
+                    <span class="detail-value">₹{{ booking.total_fare }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Booking Date</span>
+                    <span class="detail-value">{{ booking.booking_date.strftime('%b %d, %Y %H:%M') }}</span>
+                </div>
+            </div>
+
+            {% if booking.status == 'confirmed' %}
+            <div class="booking-actions">
+                <form method="post" action="{{ url_for('cancel_booking', booking_id=booking.id) }}" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                    <button type="submit" class="btn btn-danger">Cancel Booking</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-bookings">
+        <div class="no-bookings-icon">📭</div>
+        <h2>No Bookings Yet</h2>
+        <p style="color: var(--gray); margin: 1rem 0;">You haven't made any bookings yet. Start booking your first trip!</p>
+        <a href="{{ url_for('search_buses') }}" class="btn btn-primary" style="margin-top: 1rem;">Search Buses</a>
+    </div>
+{% endif %}
+{% endblock %}

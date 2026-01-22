@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .confirmation-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        text-align: center;
+    }
+
+    .success-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        animation: bounce 1s ease;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .confirmation-container h1 {
+        color: var(--secondary);
+        margin-bottom: 0.5rem;
+    }
+
+    .booking-details {
+        background: #f7fafc;
+        padding: 2rem;
+        border-radius: 10px;
+        margin: 2rem 0;
+        text-align: left;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: var(--primary);
+    }
+
+    .detail-label {
+        color: var(--gray);
+    }
+
+    .detail-value {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="success-icon">✅</div>
+    <h1>Booking Confirmed!</h1>
+    <p style="color: var(--gray); margin-bottom: 2rem;">Your tickets have been booked successfully</p>
+
+    <div class="booking-details">
+        <div class="detail-row">
+            <span class="detail-label">Booking ID:</span>
+            <span class="detail-value">#{{ booking.id }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Passenger:</span>
+            <span class="detail-value">{{ booking.passenger_name }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Bus:</span>
+            <span class="detail-value">{{ booking.bus.bus_number }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Route:</span>
+            <span class="detail-value">{{ booking.bus.route.origin }} → {{ booking.bus.route.destination }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Journey Date:</span>
+            <span class="detail-value">{{ booking.journey_date.strftime('%Y-%m-%d') }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Departure:</span>
+            <span class="detail-value">{{ booking.bus.departure_time }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Seats:</span>
+            <span class="detail-value">{{ booking.seat_numbers }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Total Fare:</span>
+            <span class="detail-value">₹{{ booking.total_fare }}</span>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a href="{{ url_for('passenger_dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+        <a href="{{ url_for('my_bookings') }}" class="btn btn-secondary">View All Bookings</a>
+    </div>
+</div>
+{% endblock %}

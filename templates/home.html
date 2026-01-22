@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        margin-top: 2rem;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        color: var(--gray);
+        margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .user-type-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .user-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+    }
+
+    .user-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    .user-card h2 {
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .user-card ul {
+        list-style: none;
+        margin: 1.5rem 0;
+    }
+
+    .user-card ul li {
+        padding: 0.5rem 0;
+        color: var(--gray);
+    }
+
+    .user-card ul li::before {
+        content: '✓';
+        color: var(--secondary);
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>🚌 Welcome to BusTicket System</h1>
+    <p>Book your bus tickets easily and manage bus routes efficiently</p>
+    
+    {% if not current_user.is_authenticated %}
+    <div class="cta-buttons">
+        <a href="{{ url_for('login') }}" class="btn btn-primary" style="font-size: 1.1rem;">Login</a>
+    </div>
+    {% endif %}
+</div>
+
+{% if not current_user.is_authenticated %}
+<div class="user-type-cards">
+    <div class="user-card">
+        <div class="feature-icon">👥</div>
+        <h2>For Passengers</h2>
+        <ul>
+            <li>Search buses between cities</li>
+            <li>Select travel date</li>
+            <li>Choose your seats</li>
+            <li>Book tickets instantly</li>
+            <li>View booking history</li>
+        </ul>
+        <a href="{{ url_for('passenger_register') }}" class="btn btn-primary" style="width: 100%;">Register as Passenger</a>
+    </div>
+
+    <div class="user-card">
+        <div class="feature-icon">🏢</div>
+        <h2>For Company Admins</h2>
+        <ul>
+            <li>Add and manage bus routes</li>
+            <li>Manage bus fleet</li>
+            <li>Modify fares</li>
+            <li>View all bookings</li>
+            <li>Export booking reports</li>
+        </ul>
+        <a href="{{ url_for('admin_register') }}" class="btn btn-secondary" style="width: 100%;">Register as Admin</a>
+    </div>
+</div>
+{% endif %}
+
+<div class="feature-grid">
+    <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Easy Search</h3>
+        <p>Find buses quickly by origin, destination, and date</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">💺</div>
+        <h3>Seat Selection</h3>
+        <p>Choose your preferred seats with real-time availability</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant Booking</h3>
+        <p>Book tickets in seconds with confirmation</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Admin Dashboard</h3>
+        <p>Comprehensive management tools for bus operators</p>
+    </div>
+</div>
+{% endblock %}

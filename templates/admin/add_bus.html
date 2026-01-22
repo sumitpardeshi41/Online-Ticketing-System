@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+
+    .form-container h2 {
+        text-align: center;
+        color: var(--secondary);
+        margin-bottom: 2rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 0.9rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+
+    .error-message {
+        color: var(--danger);
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+    }
+
+    .info-note {
+        background: #f0f9ff;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--primary);
+        font-size: 0.9rem;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-top: 0.3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>➕ Add New Bus</h2>
+    
+    <div class="info-note">
+        <strong>Note:</strong> Make sure you have created the route before adding a bus. You can manage routes from the admin dashboard.
+    </div>
+    
+    <form method="post">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-row">
+            <div class="form-group">
+                {{ form.bus_number.label }}
+                {{ form.bus_number(class="form-control", placeholder="e.g., MH12AB1234") }}
+                {% if form.bus_number.errors %}
+                    {% for error in form.bus_number.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.bus_type.label }}
+                {{ form.bus_type(class="form-control") }}
+                {% if form.bus_type.errors %}
+                    {% for error in form.bus_type.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                {{ form.total_seats.label }}
+                {{ form.total_seats(class="form-control", placeholder="e.g., 40") }}
+                <div class="help-text">Number of passenger seats (1-60)</div>
+                {% if form.total_seats.errors %}
+                    {% for error in form.total_seats.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.route_id.label }}
+                {{ form.route_id(class="form-control") }}
+                {% if form.route_id.errors %}
+                    {% for error in form.route_id.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                {{ form.departure_time.label }}
+                {{ form.departure_time(class="form-control", type="time", placeholder="08:00") }}
+                <div class="help-text">Format: HH:MM (e.g., 08:00)</div>
+                {% if form.departure_time.errors %}
+                    {% for error in form.departure_time.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.arrival_time.label }}
+                {{ form.arrival_time(class="form-control", type="time", placeholder="14:30") }}
+                <div class="help-text">Format: HH:MM (e.g., 14:30)</div>
+                {% if form.arrival_time.errors %}
+                    {% for error in form.arrival_time.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="checkbox-group">
+            {{ form.is_active() }}
+            {{ form.is_active.label }}
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn btn-secondary" style="flex: 1; padding: 1rem;">Save Bus</button>
+            <a href="{{ url_for('manage_buses') }}" class="btn" style="flex: 1; padding: 1rem; background: var(--gray); color: white; text-align: center; text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

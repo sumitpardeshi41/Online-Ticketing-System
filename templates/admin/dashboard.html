@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .admin-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .admin-header h1 {
+        color: var(--secondary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--gray);
+        font-weight: 600;
+    }
+
+    .quick-actions {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .quick-actions h2 {
+        color: var(--secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .recent-bookings {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .recent-bookings h2 {
+        color: var(--secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    .bookings-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .bookings-table th {
+        background: #f7fafc;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--dark);
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .bookings-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .bookings-table tr:hover {
+        background: #f7fafc;
+    }
+
+    .status-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-confirmed {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+
+    .status-cancelled {
+        background: #fed7d7;
+        color: #742a2a;
+    }
+
+    @media (max-width: 768px) {
+        .bookings-table {
+            font-size: 0.9rem;
+        }
+
+        .bookings-table th,
+        .bookings-table td {
+            padding: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>🏢 Admin Dashboard</h1>
+    <p>Manage your bus ticketing system</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">🛣️</div>
+        <div class="stat-value">{{ total_routes }}</div>
+        <div class="stat-label">Total Routes</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">🚌</div>
+        <div class="stat-value">{{ total_buses }}</div>
+        <div class="stat-label">Total Buses</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">🎫</div>
+        <div class="stat-value">{{ total_bookings }}</div>
+        <div class="stat-label">Total Bookings</div>
+    </div>
+</div>
+
+<div class="quick-actions">
+    <h2>⚡ Quick Actions</h2>
+    <div class="action-buttons">
+        <a href="{{ url_for('add_route') }}" class="btn btn-primary">➕ Add Route</a>
+        <a href="{{ url_for('add_bus') }}" class="btn btn-primary">➕ Add Bus</a>
+        <a href="{{ url_for('manage_routes') }}" class="btn btn-secondary">📋 Manage Routes</a>
+        <a href="{{ url_for('manage_buses') }}" class="btn btn-secondary">📋 Manage Buses</a>
+        <a href="{{ url_for('export_bookings') }}" class="btn btn-warning">📥 Export Bookings</a>
+    </div>
+</div>
+
+<div class="recent-bookings">
+    <h2>📊 Recent Bookings</h2>
+    
+    {% if recent_bookings %}
+    <div style="overflow-x: auto;">
+        <table class="bookings-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Passenger</th>
+                    <th>Bus</th>
+                    <th>Route</th>
+                    <th>Date</th>
+                    <th>Seats</th>
+                    <th>Fare</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in recent_bookings %}
+                <tr>
+                    <td>#{{ booking.id }}</td>
+                    <td>{{ booking.passenger_name }}</td>
+                    <td>{{ booking.bus.bus_number }}</td>
+                    <td>{{ booking.bus.route.origin }} → {{ booking.bus.route.destination }}</td>
+                    <td>{{ booking.journey_date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ booking.seat_numbers }}</td>
+                    <td>₹{{ booking.total_fare }}</td>
+                    <td>
+                        <span class="status-badge status-{{ booking.status }}">
+                            {{ booking.status.title() }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>No bookings yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
